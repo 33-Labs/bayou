@@ -15,6 +15,10 @@ export default function RecipientsInput(props) {
     setInvalidRecords([])
   }, [props.selectedToken])
 
+  const batchTransfer = async (token, records) => {
+    
+  }
+
   const queryReceiver = async (token, address) => {
     const code = `
       import FungibleToken from 0xFungibleToken
@@ -51,10 +55,9 @@ export default function RecipientsInput(props) {
       let task = new Promise(async (resolve, reject) => {
         let prepared = await queryReceiver(token, record.address)
         if (prepared === true) {
-          console.log(record)
           preparedRecords.push(record)
         } else {
-          unpreparedRecords.push(record.address)
+          unpreparedRecords.push(record)
         }
         resolve(prepared)
       })
@@ -62,11 +65,13 @@ export default function RecipientsInput(props) {
     })
 
     await Promise.all(tasks)
-    let unique = [...new Set(unpreparedRecords)]
-    console.log(unpreparedRecords)
-    console.log(unique)
-    console.log('prepared' + ' ' + preparedRecords)
-    return [preparedRecords, unique]
+
+    setRecordsSum(preparedRecords.reduce((p, c) => { return p + c.amount }, 0.0))
+
+    preparedRecords.sort((a, b) => {return a.id - b.id})
+    unpreparedRecords.sort((a, b) => {return a.id - b.id})
+
+    return [preparedRecords, unpreparedRecords]
   }
 
   const filterRecords = (rawRecordsStr) => {
@@ -90,18 +95,11 @@ export default function RecipientsInput(props) {
         const bytes = Buffer.from(address.replace("0x", ""), "hex")
         if (bytes.length != 8) { throw "invalid address" }
 
-        records.push({address: address, amount: amount})
+        records.push({id: i, address: address, amount: amount, rawRecord: rawRecord})
       } catch (e) {
         invalidRecords.push(rawRecord)
       }
     } 
-
-    for (var i = 0; i < records.length; i++) {
-
-    }
-
-    setRecordsSum(records.reduce((p, c) => { return p + c.amount }, 0.0))
-    
     return [records, invalidRecords]
   }
 
@@ -132,9 +130,8 @@ export default function RecipientsInput(props) {
             type="button"
             className="absolute right-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
             onClick={async () => {
-              if (props.selectedToken) {
+              if (props.selectedToken && rawRecordsStr.trim().length > 0) {
                 const [records, invalid] = filterRecords(rawRecordsStr)
-                console.log('Selected ' + props.selectedToken.symbol)
                 const [prepared, unprepared] = await filterRecordsOnChain(props.selectedToken, records)
   
                 setValidRecords(prepared)
@@ -152,7 +149,7 @@ export default function RecipientsInput(props) {
           <label className="block mt-20 text-2xl font-bold font-flow">Confirm</label>
           <div className="mt-1 mb-30">
             <ul role="list">
-              <li>
+              <li key="title">
                 <div className="flex items-center">
                   <div className="flex-none w-30 text-md font-flow font-semibold leading-10">
                     Address
@@ -164,8 +161,8 @@ export default function RecipientsInput(props) {
                 </div>
               </li>
             {
-              validRecords.map((record) => (
-                <li>
+              validRecords.map((record, index) => (
+                <li key={index}>
                   <div className="flex items-center">
                     <div className="flex-none w-30 text-lg font-flow leading-10">
                       {record.address}
@@ -178,7 +175,7 @@ export default function RecipientsInput(props) {
                 </li>
               ))
             }
-              <li>
+              <li key="total">
                 <div className="flex items-center">
                   <div className="flex-none w-30 text-md font-flow font-semibold leading-10">
                     Total
@@ -189,7 +186,7 @@ export default function RecipientsInput(props) {
                   </div>
                 </div>
               </li>
-              <li>
+              <li key="balance">
                 <div className="flex items-center">
                   <div className="flex-none w-30 text-md font-flow font-semibold leading-10">
                     Your Balance
@@ -200,7 +197,7 @@ export default function RecipientsInput(props) {
                   </div>
                 </div>
               </li>
-              <li>
+              <li key="remaining">
                 <div className="flex items-center">
                   <div className="flex-none w-30 text-md font-flow font-semibold leading-10">
                     Remaining
@@ -240,7 +237,7 @@ export default function RecipientsInput(props) {
         unpreparedRecords.length > 0 && (
           <>
             <label className="block font-flow text-md leading-10">
-            Uninitialized accounts
+            Due to uninitialized accounts
             </label>
             <div className="mt-1">
               <textarea
@@ -249,7 +246,7 @@ export default function RecipientsInput(props) {
                 id="unprepared"
                 className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
                 disabled={true}
-                defaultValue={(unpreparedRecords.reduce((p, c) => { return `${p}\n${c}`}, '')).trim()}
+                defaultValue={(unpreparedRecords.reduce((p, c) => { return `${p}\n${c.rawRecord}`}, '')).trim()}
                 spellCheck={false}
               />
             </div>
@@ -260,7 +257,7 @@ export default function RecipientsInput(props) {
         invalidRecords.length > 0 && (
           <>
             <label className="block font-flow text-md leading-10">
-            Invalid Records
+            Due to invalid format
             </label>
             <div className="mt-1">
               <textarea
@@ -278,7 +275,7 @@ export default function RecipientsInput(props) {
       }
 
 
-      <div className="h-40"></div>
+      <div className="h-28"></div>
     </div>
   )
 }

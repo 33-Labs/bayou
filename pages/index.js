@@ -1,4 +1,5 @@
-import Head from 'next/head'
+import Image from 'next/image'
+import styles from '../styles/Home.module.css'
 import { useState, useEffect } from "react";
 import * as fcl from "@onflow/fcl";
 
@@ -10,6 +11,10 @@ import WalletConnector from '../components/WalletConnector';
 export default function Home() {
   const [user, setUser] = useState({loggedIn: null})
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
+  useEffect((user) => {
+    setSelectedToken(null)
+    setTokenBalance(0)
+  }, [user])
   const [selectedToken, setSelectedToken] = useState(null)
   const [tokenBalance, setTokenBalance] = useState(0)
 
@@ -41,6 +46,16 @@ export default function Home() {
         }
 
       </div>
+      <footer className={styles.footer}>
+        <a
+          href="https://github.com/33-Labs"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-flow text-sm"
+        >
+          Made by 33Lab with ❤️
+        </a>
+      </footer>
     </div>
   )
 }
