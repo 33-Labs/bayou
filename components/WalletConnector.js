@@ -1,4 +1,5 @@
 import * as fcl from "@onflow/fcl";
+import config from "../flow/config.js"
 
 export default function WalletConnector(props) {
   const user = props.user

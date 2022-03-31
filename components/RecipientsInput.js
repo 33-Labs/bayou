@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import * as fcl from "@onflow/fcl";
 
@@ -9,8 +9,64 @@ export default function RecipientsInput(props) {
   const [unpreparedRecords, setUnpreparedRecords] = useState([])
   const [invalidRecords, setInvalidRecords] = useState([])
 
-  const checkAddresses = (addresses) => {
+  useEffect((token) => {
+    setValidRecords([])
+    setUnpreparedRecords([])
+    setInvalidRecords([])
+  }, [props.selectedToken])
 
+  const queryReceiver = async (token, address) => {
+    const code = `
+      import FungibleToken from 0xFungibleToken
+      import ${token.contractName} from ${token.contractAddress}
+      
+      pub fun main(address: Address): Bool {
+          let account = getAccount(address)
+      
+          let vaultRef = account
+              .getCapability(${token.receiverPath})
+              .borrow<&${token.contractName}.Vault{FungibleToken.Receiver}>()
+          
+          if let vault = vaultRef {
+            return true
+          }
+          return false 
+      }
+    `
+    .replace("0xFungibleToken", "0x9a0766d93b6608b7")
+
+    const prepared = await fcl.query({
+      cadence: code,
+      args: (arg, t) => [arg(address, t.Address)]
+    }) 
+
+    return prepared ?? false
+  }
+
+  const filterRecordsOnChain = async (token, records) => {
+    let tasks = []
+    let preparedRecords = []
+    let unpreparedRecords = []
+    records.map(async (record) => {
+      let task = new Promise(async (resolve, reject) => {
+        let prepared = await queryReceiver(token, record.address)
+        if (prepared === true) {
+          console.log(record)
+          preparedRecords.push(record)
+        } else {
+          unpreparedRecords.push(record.address)
+        }
+        resolve(prepared)
+      })
+      tasks.push(task)
+    })
+
+    await Promise.all(tasks)
+    let unique = [...new Set(unpreparedRecords)]
+    console.log(unpreparedRecords)
+    console.log(unique)
+    console.log('prepared' + ' ' + preparedRecords)
+    return [preparedRecords, unique]
   }
 
   const filterRecords = (rawRecordsStr) => {
@@ -36,7 +92,6 @@ export default function RecipientsInput(props) {
 
         records.push({address: address, amount: amount})
       } catch (e) {
-        console.log(e)
         invalidRecords.push(rawRecord)
       }
     } 
@@ -76,12 +131,16 @@ export default function RecipientsInput(props) {
         <button
             type="button"
             className="absolute right-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
-            onClick={() => {
-              const [records, invalidRecords] = filterRecords(rawRecordsStr)
-              console.log(records)
-              console.log(invalidRecords)
-              setValidRecords(records)
-              setInvalidRecords(invalidRecords)
+            onClick={async () => {
+              if (props.selectedToken) {
+                const [records, invalid] = filterRecords(rawRecordsStr)
+                console.log('Selected ' + props.selectedToken.symbol)
+                const [prepared, unprepared] = await filterRecordsOnChain(props.selectedToken, records)
+  
+                setValidRecords(prepared)
+                setUnpreparedRecords(unprepared)
+                setInvalidRecords(invalid)
+              }
             }}
             >
             Check
@@ -174,6 +233,50 @@ export default function RecipientsInput(props) {
           </>
         )
       }
+      {(unpreparedRecords.length > 0 || invalidRecords.length > 0) && (
+        <label className="block mt-20 text-2xl font-bold font-flow">Filtered Out Records</label>
+      )} 
+      {
+        unpreparedRecords.length > 0 && (
+          <>
+            <label className="block font-flow text-md leading-10">
+            Uninitialized accounts
+            </label>
+            <div className="mt-1">
+              <textarea
+                rows={unpreparedRecords.length}
+                name="unprepared"
+                id="unprepared"
+                className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
+                disabled={true}
+                defaultValue={(unpreparedRecords.reduce((p, c) => { return `${p}\n${c}`}, '')).trim()}
+                spellCheck={false}
+              />
+            </div>
+          </>
+        )
+      }
+      {
+        invalidRecords.length > 0 && (
+          <>
+            <label className="block font-flow text-md leading-10">
+            Invalid Records
+            </label>
+            <div className="mt-1">
+              <textarea
+                rows={invalidRecords.length}
+                name="invalid"
+                id="invalid"
+                className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
+                disabled={true}
+                defaultValue={(invalidRecords.reduce((p, c) => { return `${p}\n${c}`}, '')).trim()}
+                spellCheck={false}
+              />
+            </div>
+          </>
+        )
+      }
+
 
       <div className="h-40"></div>
     </div>
