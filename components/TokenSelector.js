@@ -74,18 +74,20 @@ export default function TokenSelector(props) {
   }
 
   return (
-    <Combobox as="div" className={props.className} value={selectedToken} onChange={async (token) => {
-      const user = await fcl.currentUser.snapshot()
-      setBalance(0)
-      queryBalance(token, user.addr)
-
-      setSelectedToken(token)
-      props.onTokenSelected(token)
+    <Combobox as="div" className={props.className} value={props.user && props.user.loggedIn && selectedToken} onChange={async (token) => {
+      if (props.user && props.user.loggedIn) {
+        setBalance(0)
+        queryBalance(token, props.user.addr)
+  
+        setSelectedToken(token)
+        props.onTokenSelected(token)
+      }
     }}>
       <Combobox.Label className="block text-2xl font-flow font-bold">Token</Combobox.Label>
-      {selectedToken && props.user && props.user.loggedIn
+      {props.user && props.user.loggedIn ? (selectedToken 
         ? <Combobox.Label className="block text-md font-flow leading-10">Your balance is {balance} {selectedToken.symbol}</Combobox.Label>
         : <Combobox.Label className="block text-md font-flow leading-10">Select the token to transfer</Combobox.Label>
+      ) : <Combobox.Label className="block text-md font-flow leading-10">Please connect to wallet</Combobox.Label>
       }
       <div className="relative mt-1">
         <Combobox.Input
@@ -93,7 +95,7 @@ export default function TokenSelector(props) {
           onChange={(event) => {
             setQuery(event.target.value)
           }}
-          displayValue={(token) => `${token.name} (${token.symbol})`}
+          displayValue={(token) => token && `${token.name} (${token.symbol})`}
         />
         <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
           <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />

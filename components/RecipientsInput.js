@@ -160,20 +160,21 @@ export default function RecipientsInput(props) {
               </li>
             </ul>
           </div>
+          <div className="relative flex items-end h-20 mb-30">
+            <button
+                type="button"
+                className="absolute right-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
+                onClick={() => {
+                  console.log("transfer")
+                }}
+                >
+                Transfer
+            </button>
+          </div>
           </>
         )
       }
-      <div className="relative flex items-end h-20 mb-30">
-        <button
-            type="button"
-            className="absolute right-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
-            onClick={() => {
-              console.log("transfer")
-            }}
-            >
-            Transfer
-        </button>
-      </div>
+
       <div className="h-40"></div>
     </div>
   )
