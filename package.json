@@ -11,6 +11,7 @@
   "dependencies": {
     "@headlessui/react": "^1.5.0",
     "@heroicons/react": "^1.0.6",
+    "@onflow/fcl": "^0.0.78",
     "@tailwindcss/forms": "^0.5.0",
     "autoprefixer": "^10.4.4",
     "next": "12.1.3",
