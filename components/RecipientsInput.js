@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 import * as fcl from "@onflow/fcl"
 import bayouService from '../lib/bayouService'
+import publicConfig from '../publicConfig'
+import Decimal from 'decimal.js'
 
 export default function RecipientsInput(props) {
   const [rawRecordsStr, setRawRecordsStr] = useState('')
@@ -17,12 +19,12 @@ export default function RecipientsInput(props) {
     text: "Process"
   })
 
-  const cleanStatus = () => {
+  const cleanStatus = useCallback(() => {
     setValidRecords([])
     setUnpreparedRecords([])
     setInvalidRecords([])
     cleanTxInfo()
-  }
+  }, [])
 
   const cleanTxInfo = () => {
     setTxid(null)
@@ -40,9 +42,9 @@ export default function RecipientsInput(props) {
     Rejected
   }
 
-  useEffect((token) => {
+  useEffect(() => {
     cleanStatus()
-  }, [props.selectedToken])
+  }, [props.selectedToken, cleanStatus])
 
   const filterRecordsOnChain = async (token, records) => {
     let tasks = []
@@ -63,7 +65,9 @@ export default function RecipientsInput(props) {
     })
 
     await Promise.all(tasks)
-    setRecordsSum(preparedRecords.reduce((p, c) => { return p + c.amount }, 0.0))
+    setRecordsSum(preparedRecords.reduce((p, c) => { 
+      return p.add(c.amount)
+    }, new Decimal(0)))
 
     preparedRecords.sort((a, b) => {return a.id - b.id})
     unpreparedRecords.sort((a, b) => {return a.id - b.id})
@@ -80,13 +84,8 @@ export default function RecipientsInput(props) {
       let rawRecord = rawRecords[i]
       try {
         const [address, rawAmount] = rawRecord.split(",")
-        const amount = Number(rawAmount)
-        if (isNaN(amount) || amount <= 0 ) { throw "invalid amount" }
-
-        if (!Number.isInteger(amount)) {
-          const [integer, digits] = rawAmount.split(".")
-          if (digits.length > 8) { throw "invalid amount" }
-        }
+        const amount = new Decimal(rawAmount)
+        if (!amount.isPositive() || amount.decimalPlaces() > 8) { throw "invalid amount" }
 
         if (!address.startsWith("0x") || address.length != 18) { throw "invalid address" }
         const bytes = Buffer.from(address.replace("0x", ""), "hex")
@@ -170,7 +169,7 @@ export default function RecipientsInput(props) {
                     </div>
                     <div className="grow border-b mx-2 border-black"></div>
                     <div className="flex-none w-30 text-lg font-flow leading-10">
-                      {record.amount}
+                      {record.amount.toString()}
                     </div>
                   </div>
                 </li>
@@ -183,7 +182,7 @@ export default function RecipientsInput(props) {
                   </div>
                   <div className="grow"></div>
                   <div className="flex-none w-30 text-md font-flow font-semibold leading-10">
-                    {recordsSum} {props.selectedToken && props.selectedToken.symbol} 
+                    {recordsSum.toString()} {props.selectedToken && props.selectedToken.symbol} 
                   </div>
                 </div>
               </li>
@@ -194,7 +193,7 @@ export default function RecipientsInput(props) {
                   </div>
                   <div className="grow"></div>
                   <div className="flex-none w-30 text-md font-flow font-semibold leading-10">
-                    {props.tokenBalance} {props.selectedToken && props.selectedToken.symbol}
+                    {props.tokenBalance.toString()} {props.selectedToken && props.selectedToken.symbol}
                   </div>
                 </div>
               </li>
@@ -205,12 +204,12 @@ export default function RecipientsInput(props) {
                   </div>
                   <div className="grow"></div>
                   {
-                    (props.tokenBalance - recordsSum) > 0 
+                    !(props.tokenBalance.sub(recordsSum).isNegative())
                     ?  <div className="flex-none w-30 text-md font-flow font-semibold leading-10">
-                      {(props.tokenBalance - recordsSum).toFixed(8)} {props.selectedToken && props.selectedToken.symbol}
+                      {props.tokenBalance.sub(recordsSum).toString()} {props.selectedToken && props.selectedToken.symbol}
                     </div>
                     : <div className="flex-none w-30 text-md text-rose-500 font-flow font-semibold leading-10">
-                      {(props.tokenBalance - recordsSum).toFixed(8)} {props.selectedToken && props.selectedToken.symbol}
+                      {props.tokenBalance.sub(recordsSum).toString()} {props.selectedToken && props.selectedToken.symbol}
                     </div>
                   }
                 </div>
@@ -234,7 +233,7 @@ export default function RecipientsInput(props) {
                     } catch (e) {
                       if (typeof e === "string" && e.includes("Execution failed")) {
                           setTxStatus(TransactionStatus.ExecutionFailed)
-                      } else if (typeof e === "object" && e.message.includes("User rejected signature")) {
+                      } else if (typeof e === "object" && e.message.includes("Declined")) {
                           setTxStatus(TransactionStatus.Rejected)
                       }
                     }
@@ -262,7 +261,7 @@ export default function RecipientsInput(props) {
 
                   {txid && (
                     <a 
-                    href={`https://testnet.flowscan.org/transaction/${txid}`} 
+                    href={`${publicConfig.flowscanURL}/transaction/${txid}`} 
                     rel="noopener noreferrer"
                     target="_blank" className="block font-flow text-sm leading-6 underline decoration-flow-green decoration-2">
                       {`${txid}`}

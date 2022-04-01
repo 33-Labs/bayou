@@ -5,6 +5,7 @@ import { Combobox } from '@headlessui/react'
 
 import TokenList from '../lib/tokenList';
 import bayouService from '../lib/bayouService'
+import Decimal from 'decimal.js';
 
 const tokens = TokenList()
 
@@ -15,7 +16,7 @@ function classNames(...classes) {
 export default function TokenSelector(props) {
   const [query, setQuery] = useState('')
   const [selectedToken, setSelectedToken] = useState()
-  const [balance, setBalance] = useState('')
+  const [balance, setBalance] = useState(new Decimal(0))
 
   const filteredTokens =
     query === ''
@@ -40,7 +41,7 @@ export default function TokenSelector(props) {
     }}>
       <Combobox.Label className="block text-2xl font-flow font-bold">Token</Combobox.Label>
       {props.user && props.user.loggedIn ? (selectedToken 
-        ? <Combobox.Label className="block text-md font-flow leading-10">Your balance is {balance} {selectedToken.symbol}</Combobox.Label>
+        ? <Combobox.Label className="block text-md font-flow leading-10">Your balance is {balance.toString()} {selectedToken.symbol}</Combobox.Label>
         : <Combobox.Label className="block text-md font-flow leading-10">Select the token to transfer</Combobox.Label>
       ) : <Combobox.Label className="block text-md font-flow leading-10">Please connect to wallet</Combobox.Label>
       }
