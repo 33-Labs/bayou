@@ -244,17 +244,17 @@ export default function RecipientsInput(props) {
             </button>
             {
               txStatus && (
-                <div className="flex flex-col justify-center h-14 justify-self-end">
+                <div className="min-w-0 flex flex-col justify-center h-14 justify-self-end">
                   {
                     txStatus == TransactionStatus.Sealed
-                    ? <label className="block font-flow text-md text-flow-green">
+                    ? <label className="font-flow text-md text-flow-green">
                     Status: {txStatus}
                     </label>
                     : (txStatus == TransactionStatus.ExecutionFailed || txStatus == TransactionStatus.Rejected) 
-                    ? <label className="block font-flow text-md text-rose-500">
+                    ? <label className="font-flow text-md text-rose-500">
                     Status: {txStatus}
                     </label>
-                    : <label className="block font-flow text-md">
+                    : <label className="font-flow text-md">
                     Status: {txStatus}
                     </label>
                   }
@@ -263,7 +263,7 @@ export default function RecipientsInput(props) {
                     <a 
                     href={`${publicConfig.flowscanURL}/transaction/${txid}`} 
                     rel="noopener noreferrer"
-                    target="_blank" className="block font-flow text-sm leading-6 underline decoration-flow-green decoration-2">
+                    target="_blank" className="truncate font-flow text-sm leading-6 underline decoration-flow-green decoration-2">
                       {`${txid}`}
                     </a >
                   )}
