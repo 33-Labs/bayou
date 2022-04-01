@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 
 import * as fcl from "@onflow/fcl"
-import * as t from "@onflow/types"
 
 export default function RecipientsInput(props) {
   const [rawRecordsStr, setRawRecordsStr] = useState('')
@@ -326,7 +325,10 @@ export default function RecipientsInput(props) {
                   }
 
                   {txid && (
-                    <a href={`https://testnet.flowscan.org/transaction/${txid}`} target="_blank" className="block font-flow text-sm leading-6 underline">{`${txid}`}</a >
+                    <a 
+                    href={`https://testnet.flowscan.org/transaction/${txid}`} 
+                    rel="noopener noreferrer"
+                    target="_blank" className="block font-flow text-sm leading-6 underline">{`${txid}`}</a >
                   )}
                 </div>
               )

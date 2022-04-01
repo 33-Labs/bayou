@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Image from 'next/image'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { Combobox } from '@headlessui/react'
 
@@ -121,7 +122,7 @@ export default function TokenSelector(props) {
                 {({ active, selected }) => (
                   <>
                     <div className="flex items-center">
-                      <img src={token.imageUrl} alt="" className="h-6 w-6 flex-shrink-0 rounded-full border border-gray-100" />
+                      <Image src={token.imageUrl} alt="" className="h-6 w-6 flex-shrink-0 rounded-full border border-gray-100" />
                       <span className={classNames('ml-3 truncate', selected && 'font-semibold')}>{`${token.name} (${token.symbol})`}</span>
                     </div>
 
