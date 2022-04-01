@@ -1,4 +1,5 @@
 import Image from "next/image"
+import publicConfig from "../publicConfig"
 
 export default function NavigationBar() {
   return (
@@ -8,9 +9,9 @@ export default function NavigationBar() {
         <label className="font-flow font-bold text-4xl">
           Bayou
         </label>
-        <label className="font-flow text-flow-green border border-flow-green text-sm whitespace-pre"> testnet </label>
+        <label className="font-flow text-flow-green border border-flow-green text-sm whitespace-pre"> {publicConfig.chainEnv} </label>
         <a 
-          href="https://testnet.flowscan.org" 
+          href={publicConfig.flowscanURL}
           target="_blank" 
           rel="noopener noreferrer"
           className="absolute right-0 font-flow text-lg underline decoration-flow-green decoration-2">

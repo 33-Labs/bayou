@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import * as fcl from "@onflow/fcl"
+import bayouService from '../lib/bayouService'
 
 export default function RecipientsInput(props) {
   const [rawRecordsStr, setRawRecordsStr] = useState('')
@@ -85,53 +86,14 @@ export default function RecipientsInput(props) {
     setTxStatus('Sealed')
   }
 
-  const queryTransactionStatus = async (txid) => {
-    const status = await fcl
-      .send([
-        fcl.getTransactionStatus(
-          txid
-        ),
-      ])
-      .then(fcl.decode)
-
-    return status
-  }
-
-  const queryReceiver = async (token, address) => {
-    const code = `
-      import FungibleToken from 0xFungibleToken
-      import ${token.contractName} from ${token.contractAddress}
-      
-      pub fun main(address: Address): Bool {
-          let account = getAccount(address)
-      
-          let vaultRef = account
-              .getCapability(${token.receiverPath})
-              .borrow<&${token.contractName}.Vault{FungibleToken.Receiver}>()
-          
-          if let vault = vaultRef {
-            return true
-          }
-          return false 
-      }
-    `
-    .replace("0xFungibleToken", "0x9a0766d93b6608b7")
-
-    const prepared = await fcl.query({
-      cadence: code,
-      args: (arg, t) => [arg(address, t.Address)]
-    }) 
-
-    return prepared ?? false
-  }
-
   const filterRecordsOnChain = async (token, records) => {
     let tasks = []
     let preparedRecords = []
     let unpreparedRecords = []
+
     records.map(async (record) => {
       let task = new Promise(async (resolve, reject) => {
-        let prepared = await queryReceiver(token, record.address)
+        let prepared = await bayouService.queryReceiver(token, record.address)
         if (prepared === true) {
           preparedRecords.push(record)
         } else {
@@ -143,7 +105,6 @@ export default function RecipientsInput(props) {
     })
 
     await Promise.all(tasks)
-
     setRecordsSum(preparedRecords.reduce((p, c) => { return p + c.amount }, 0.0))
 
     preparedRecords.sort((a, b) => {return a.id - b.id})
