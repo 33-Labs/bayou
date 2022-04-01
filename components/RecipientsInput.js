@@ -356,7 +356,7 @@ export default function RecipientsInput(props) {
             </label>
             <div className="mt-1">
               <textarea
-                rows={unpreparedRecords.length}
+                rows={unpreparedRecords.length > 8 ? 8 : unpreparedRecords.length}
                 name="unprepared"
                 id="unprepared"
                 className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
@@ -376,7 +376,7 @@ export default function RecipientsInput(props) {
             </label>
             <div className="mt-1">
               <textarea
-                rows={invalidRecords.length}
+                rows={invalidRecords.length > 8 ? 8 : invalidRecords.length}
                 name="invalid"
                 id="invalid"
                 className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
