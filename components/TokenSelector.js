@@ -3,8 +3,8 @@ import Image from 'next/image'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { Combobox } from '@headlessui/react'
 
-import * as fcl from "@onflow/fcl";
 import TokenList from '../lib/tokenList';
+import bayouService from '../lib/bayouService'
 
 const tokens = TokenList()
 
@@ -25,41 +25,14 @@ export default function TokenSelector(props) {
           return content.toLowerCase().includes(query.toLowerCase())
         })
 
-  const queryBalance = async (token, address) => {
-
-    const code = `
-      import FungibleToken from 0xFungibleToken
-      import ${token.contractName} from ${token.contractAddress}
-      
-      pub fun main(address: Address): UFix64 {
-          let account = getAccount(address)
-      
-          let vaultRef = account
-              .getCapability(${token.balancePath})
-              .borrow<&${token.contractName}.Vault{FungibleToken.Balance}>()
-           
-          if let vault = vaultRef {
-            return vault.balance
-          }
-          return 0.0
-      }
-    `
-    .replace("0xFungibleToken", "0x9a0766d93b6608b7")
-
-    const balance = await fcl.query({
-      cadence: code,
-      args: (arg, t) => [arg(address, t.Address)]
-    }) 
-
-    setBalance(balance ?? 0.0)
-    props.onBalanceFetched(balance ?? 0.0)
-  }
-
   return (
     <Combobox as="div" className={props.className} value={props.user && props.user.loggedIn && selectedToken} onChange={async (token) => {
       if (props.user && props.user.loggedIn) {
         setBalance(0)
-        queryBalance(token, props.user.addr)
+        bayouService.queryBalance(token, props.user.addr).then((balance) => {
+          setBalance(balance)
+          props.onBalanceFetched(balance)
+        })
   
         setSelectedToken(token)
         props.onTokenSelected(token)

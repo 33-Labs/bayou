@@ -21,70 +21,28 @@ export default function RecipientsInput(props) {
     setValidRecords([])
     setUnpreparedRecords([])
     setInvalidRecords([])
+    cleanTxInfo()
+  }
+
+  const cleanTxInfo = () => {
     setTxid(null)
     setTxStatus(null)
+  }
+
+  const Pending = 'Pending'
+  const Sealed = 'Sealed'
+  const ExecutionFailed = 'Execution Failed'
+  const Rejected = 'Transaction Rejected'
+  const TransactionStatus = {
+    Pending,
+    Sealed,
+    ExecutionFailed,
+    Rejected
   }
 
   useEffect((token) => {
     cleanStatus()
   }, [props.selectedToken])
-
-  const batchTransfer = async (token, records) => {
-    const recipients = records.map((record) => {return record.address})
-    const amounts = records.map((record) => {return record.amount.toFixed(8).toString()})
-    const code = `
-      import FungibleToken from 0xFungibleToken
-      import ${token.contractName} from ${token.contractAddress}
-
-      transaction(recipients: [Address], amounts: [UFix64]) {
-
-          let vaultRef: &${token.contractName}.Vault
-
-          prepare(signer: AuthAccount) {
-              // Get a reference to the signer's stored vault
-              self.vaultRef = signer.borrow<&${token.contractName}.Vault>(from: ${token.providerPath})
-                  ?? panic("Could not borrow reference to the owner's Vault!")
-          }
-
-          pre {
-              recipients.length == amounts.length: "invalid params"
-          }
-
-          execute {
-              var counter = 0
-
-              while (counter < recipients.length) {
-                  // Get the recipient's public account object
-                  let recipientAccount = getAccount(recipients[counter])
-
-                  // Get a reference to the recipient's Receiver
-                  let receiverRef = recipientAccount.getCapability(${token.receiverPath})!
-                      .borrow<&{FungibleToken.Receiver}>()
-                      ?? panic("Could not borrow receiver reference to the recipient's Vault")
-
-                  // Deposit the withdrawn tokens in the recipient's receiver
-                  receiverRef.deposit(from: <-self.vaultRef.withdraw(amount: amounts[counter]))
-
-                  counter = counter + 1
-              }
-          }
-      }
-    `
-    .replace("0xFungibleToken", "0x9a0766d93b6608b7")
-  
-    const transactionId = await fcl.mutate({
-      cadence: code,
-      args: (arg, t) => [arg(recipients, t.Array(t.Address)), arg(amounts, t.Array(t.UFix64))],
-      proposer: fcl.currentUser,
-      payer: fcl.currentUser,
-      limit: 9999
-    })
-    setTxid(transactionId)
-    setTxStatus('Pending')
-
-    await fcl.tx(transactionId).onceSealed()
-    setTxStatus('Sealed')
-  }
 
   const filterRecordsOnChain = async (token, records) => {
     let tasks = []
@@ -264,16 +222,20 @@ export default function RecipientsInput(props) {
                 type="button"
                 className="justify-self-end h-14 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
                 onClick={async () => {
+                  cleanTxInfo()
                   if (props.selectedToken) {
                     try {
-                      await batchTransfer(props.selectedToken, validRecords)
+                      const transactionId = await bayouService.batchTransfer(props.selectedToken, validRecords)
+                      setTxid(transactionId)
+                      setTxStatus(TransactionStatus.Pending)
+                  
+                      await fcl.tx(transactionId).onceSealed()
+                      setTxStatus(TransactionStatus.Sealed)
                     } catch (e) {
-                      console.log(e)
-                      console.log(typeof e)
                       if (typeof e === "string" && e.includes("Execution failed")) {
-                          setTxStatus("Execution Failed")
+                          setTxStatus(TransactionStatus.ExecutionFailed)
                       } else if (typeof e === "object" && e.message.includes("User rejected signature")) {
-                          setTxStatus("Transaction Rejected")
+                          setTxStatus(TransactionStatus.Rejected)
                       }
                     }
                   }
@@ -285,11 +247,11 @@ export default function RecipientsInput(props) {
               txStatus && (
                 <div className="flex flex-col justify-center h-14 justify-self-end">
                   {
-                    txStatus == "Sealed"
+                    txStatus == TransactionStatus.Sealed
                     ? <label className="block font-flow text-md text-flow-green">
                     Status: {txStatus}
                     </label>
-                    : (txStatus == "Execution Failed" || txStatus == "Transaction Rejected") 
+                    : (txStatus == TransactionStatus.ExecutionFailed || txStatus == TransactionStatus.Rejected) 
                     ? <label className="block font-flow text-md text-rose-500">
                     Status: {txStatus}
                     </label>
@@ -357,7 +319,6 @@ export default function RecipientsInput(props) {
           </>
         )
       }
-
 
       <div className="h-28"></div>
     </div>
