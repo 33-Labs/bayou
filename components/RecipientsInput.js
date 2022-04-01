@@ -10,6 +10,11 @@ export default function RecipientsInput(props) {
   const [invalidRecords, setInvalidRecords] = useState([])
   const [txid, setTxid] = useState(null)
   const [txStatus, setTxStatus] = useState(null)
+  const [processState, setProcessState] = useState({
+    disabled: false, 
+    bg_color: "bg-flow-green",
+    text: "Process"
+  })
 
   const cleanStatus = () => {
     setValidRecords([])
@@ -201,12 +206,15 @@ export default function RecipientsInput(props) {
       <div className="relative flex items-end h-20">
         <button
             type="button"
-            className="absolute h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
+            disabled={processState.disabled}
+            className={`absolute h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black ${processState.bg_color} hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
             onClick={async () => {
               cleanStatus()
               if (props.selectedToken && rawRecordsStr.trim().length > 0) {
                 const [records, invalid] = filterRecords(rawRecordsStr.trim())
+                setProcessState({disabled: true, bg_color: "bg-flow-green-dark", text: "Processing"})
                 const [prepared, unprepared] = await filterRecordsOnChain(props.selectedToken, records)
+                setProcessState({disabled: false, bg_color: "bg-flow-green", text: "Process"})
   
                 setValidRecords(prepared)
                 setUnpreparedRecords(unprepared)
@@ -214,7 +222,7 @@ export default function RecipientsInput(props) {
               }
             }}
             >
-            Process
+            {processState.text}
         </button>
       </div>
       {
