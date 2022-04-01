@@ -11,12 +11,16 @@ export default function RecipientsInput(props) {
   const [txid, setTxid] = useState(null)
   const [txStatus, setTxStatus] = useState(null)
 
-  useEffect((token) => {
+  const cleanStatus = () => {
     setValidRecords([])
     setUnpreparedRecords([])
     setInvalidRecords([])
     setTxid(null)
     setTxStatus(null)
+  }
+
+  useEffect((token) => {
+    cleanStatus()
   }, [props.selectedToken])
 
   const batchTransfer = async (token, records) => {
@@ -199,6 +203,7 @@ export default function RecipientsInput(props) {
             type="button"
             className="absolute h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
             onClick={async () => {
+              cleanStatus()
               if (props.selectedToken && rawRecordsStr.trim().length > 0) {
                 const [records, invalid] = filterRecords(rawRecordsStr)
                 const [prepared, unprepared] = await filterRecordsOnChain(props.selectedToken, records)
