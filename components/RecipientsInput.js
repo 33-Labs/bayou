@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
-import * as fcl from "@onflow/fcl";
+import * as fcl from "@onflow/fcl"
+import * as t from "@onflow/types"
 
 export default function RecipientsInput(props) {
   const [rawRecordsStr, setRawRecordsStr] = useState('')
@@ -16,7 +17,57 @@ export default function RecipientsInput(props) {
   }, [props.selectedToken])
 
   const batchTransfer = async (token, records) => {
-    
+    const recipients = records.map((record) => {return record.address})
+    const amounts = records.map((record) => {return record.amount.toFixed(8).toString()})
+    const code = `
+      import FungibleToken from 0xFungibleToken
+      import ${token.contractName} from ${token.contractAddress}
+
+      transaction(recipients: [Address], amounts: [UFix64]) {
+
+          let vaultRef: &${token.contractName}.Vault
+
+          prepare(signer: AuthAccount) {
+              // Get a reference to the signer's stored vault
+              self.vaultRef = signer.borrow<&${token.contractName}.Vault>(from: ${token.providerPath})
+                  ?? panic("Could not borrow reference to the owner's Vault!")
+          }
+
+          pre {
+              recipients.length == amounts.length: "invalid params"
+          }
+
+          execute {
+              var counter = 0
+
+              while (counter < recipients.length) {
+                  // Get the recipient's public account object
+                  let recipientAccount = getAccount(recipients[counter])
+
+                  // Get a reference to the recipient's Receiver
+                  let receiverRef = recipientAccount.getCapability(${token.receiverPath})!
+                      .borrow<&{FungibleToken.Receiver}>()
+                      ?? panic("Could not borrow receiver reference to the recipient's Vault")
+
+                  // Deposit the withdrawn tokens in the recipient's receiver
+                  receiverRef.deposit(from: <-self.vaultRef.withdraw(amount: amounts[counter]))
+
+                  counter = counter + 1
+              }
+          }
+      }
+    `
+    .replace("0xFungibleToken", "0x9a0766d93b6608b7")
+  
+    const transactionId = await fcl.mutate({
+      cadence: code,
+      args: (arg, t) => [arg(recipients, t.Array(t.Address)), arg(amounts, t.Array(t.UFix64))],
+      proposer: fcl.currentUser,
+      payer: fcl.currentUser,
+      limit: 9999
+    })
+
+    return transactionId
   }
 
   const queryReceiver = async (token, address) => {
@@ -220,8 +271,11 @@ export default function RecipientsInput(props) {
             <button
                 type="button"
                 className="absolute right-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
-                onClick={() => {
-                  console.log("transfer")
+                onClick={async () => {
+                  if (props.selectedToken) {
+                    const txid = await batchTransfer(props.selectedToken, validRecords)
+                    console.log("txid: " + txid)
+                  }
                 }}
                 >
                 Transfer
