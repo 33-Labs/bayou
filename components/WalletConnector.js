@@ -32,7 +32,7 @@ export default function WalletConnector(props) {
     return (
       <div>
         <label className="block font-flow text-md leading-10">
-          Connect to wallet and start transfer
+          Connect to wallet and start <span className="font-flow font-bold text-sm">Batch Transfer</span>
         </label>
         <button
           type="button"
