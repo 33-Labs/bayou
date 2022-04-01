@@ -9,11 +9,15 @@ export default function RecipientsInput(props) {
   const [validRecords, setValidRecords] = useState([])
   const [unpreparedRecords, setUnpreparedRecords] = useState([])
   const [invalidRecords, setInvalidRecords] = useState([])
+  const [txid, setTxid] = useState(null)
+  const [txStatus, setTxStatus] = useState(null)
 
   useEffect((token) => {
     setValidRecords([])
     setUnpreparedRecords([])
     setInvalidRecords([])
+    setTxid(null)
+    setTxStatus(null)
   }, [props.selectedToken])
 
   const batchTransfer = async (token, records) => {
@@ -66,8 +70,23 @@ export default function RecipientsInput(props) {
       payer: fcl.currentUser,
       limit: 9999
     })
+    setTxid(transactionId)
+    setTxStatus('Pending')
 
-    return transactionId
+    await fcl.tx(transactionId).onceSealed()
+    setTxStatus('Sealed')
+  }
+
+  const queryTransactionStatus = async (txid) => {
+    const status = await fcl
+      .send([
+        fcl.getTransactionStatus(
+          txid
+        ),
+      ])
+      .then(fcl.decode)
+
+    return status
   }
 
   const queryReceiver = async (token, address) => {
@@ -179,7 +198,7 @@ export default function RecipientsInput(props) {
       <div className="relative flex items-end h-20">
         <button
             type="button"
-            className="absolute right-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
+            className="absolute h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
             onClick={async () => {
               if (props.selectedToken && rawRecordsStr.trim().length > 0) {
                 const [records, invalid] = filterRecords(rawRecordsStr)
@@ -191,7 +210,7 @@ export default function RecipientsInput(props) {
               }
             }}
             >
-            Check
+            Process
         </button>
       </div>
       {
@@ -267,19 +286,52 @@ export default function RecipientsInput(props) {
               </li>
             </ul>
           </div>
-          <div className="relative flex items-end h-20 mb-30">
+          <div className="flex gap-x-4 mt-8 items-end h-14 mb-30">
             <button
                 type="button"
-                className="absolute right-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
+                className="justify-self-end h-14 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
                 onClick={async () => {
                   if (props.selectedToken) {
-                    const txid = await batchTransfer(props.selectedToken, validRecords)
-                    console.log("txid: " + txid)
+                    try {
+                      await batchTransfer(props.selectedToken, validRecords)
+                    } catch (e) {
+                      console.log(e)
+                      console.log(typeof e)
+                      if (typeof e === "string" && e.includes("Execution failed")) {
+                          setTxStatus("Execution Failed")
+                      } else if (typeof e === "object" && e.message.includes("User rejected signature")) {
+                          setTxStatus("Transaction Rejected")
+                      }
+                    }
                   }
                 }}
                 >
                 Transfer
             </button>
+            {
+              txStatus && (
+                <div className="flex flex-col justify-center h-14 justify-self-end">
+                  {
+                    txStatus == "Sealed"
+                    ? <label className="block font-flow text-md text-flow-green">
+                    Status: {txStatus}
+                    </label>
+                    : (txStatus == "Execution Failed" || txStatus == "Transaction Rejected") 
+                    ? <label className="block font-flow text-md text-rose-500">
+                    Status: {txStatus}
+                    </label>
+                    : <label className="block font-flow text-md">
+                    Status: {txStatus}
+                    </label>
+                  }
+
+                  {txid && (
+                    <a href={`https://testnet.flowscan.org/transaction/${txid}`} target="_blank" className="block font-flow text-sm leading-6 underline">{`${txid}`}</a >
+                  )}
+                </div>
+              )
+            }
+
           </div>
           </>
         )
