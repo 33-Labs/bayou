@@ -116,7 +116,7 @@ export default function RecipientsInput(props) {
           defaultValue={''}
           spellCheck={false}
           placeholder={
-            "0xf8d6e0586b0a20c7,1.6\n0xf8d6e0586b0a20c7,2.1"
+            "0xf8d6e0586b0a20c7,1.6"
           }
           onChange={(event) => {setRawRecordsStr(event.target.value)}}
         />
