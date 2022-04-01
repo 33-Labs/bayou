@@ -189,7 +189,7 @@ export default function RecipientsInput(props) {
           defaultValue={''}
           spellCheck={false}
           placeholder={
-            "0xf8d6e0586b0a20c7,1.6"
+            "0xf8d6e0586b0a20c7,1.6\n0xf8d6e0586b0a20c7,2.1"
           }
           onChange={(event) => {setRawRecordsStr(event.target.value)}}
         />
@@ -225,7 +225,7 @@ export default function RecipientsInput(props) {
                   </div>
                   <div className="grow"></div>
                   <div className="flex-none w-30 text-md font-flow font-semibold leading-10">
-                    Amount
+                    Amount ({props.selectedToken && props.selectedToken.symbol})
                   </div>
                 </div>
               </li>
@@ -328,7 +328,9 @@ export default function RecipientsInput(props) {
                     <a 
                     href={`https://testnet.flowscan.org/transaction/${txid}`} 
                     rel="noopener noreferrer"
-                    target="_blank" className="block font-flow text-sm leading-6 underline">{`${txid}`}</a >
+                    target="_blank" className="block font-flow text-sm leading-6 underline">
+                      {`${txid}`}
+                    </a >
                   )}
                 </div>
               )
@@ -339,13 +341,13 @@ export default function RecipientsInput(props) {
         )
       }
       {(unpreparedRecords.length > 0 || invalidRecords.length > 0) && (
-        <label className="block mt-20 text-2xl font-bold font-flow">Filtered Out Records</label>
+        <label className="block mt-20 text-2xl font-bold font-flow">Invalid Entries</label>
       )} 
       {
         unpreparedRecords.length > 0 && (
           <>
             <label className="block font-flow text-md leading-10">
-            Due to uninitialized accounts
+            Due to a lack of Receiver in account
             </label>
             <div className="mt-1">
               <textarea

@@ -26,7 +26,7 @@ export default function WalletConnector(props) {
     return (
       <div>
         <label className="block font-flow text-md leading-10">
-          Start to transfer tokens after wallet connected
+          Start to transfer tokens once the wallet is connected
         </label>
         <button
           type="button"
