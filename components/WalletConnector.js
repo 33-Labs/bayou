@@ -7,9 +7,14 @@ export default function WalletConnector(props) {
   const AuthedState = () => {
     return (
       <div >
-        <label className="block font-flow text-md leading-10">
-        Logged in as 
-        <label className="whitespace-pre font-flow text-lg leading-10"> {user?.addr ?? "No Address"}    </label>
+        <label className="whitespace-pre block font-flow text-md leading-10">
+        {"Logged in as "}
+        <a 
+          href={`https://testnet.flowscan.org/account/${user?.addr ?? "No Address"}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-flow text-lg leading-10 underline decoration-flow-green decoration-2">{user?.addr ?? "No Address"}
+        </a>
         </label>
         <button
           type="button"

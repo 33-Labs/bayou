@@ -205,7 +205,7 @@ export default function RecipientsInput(props) {
             onClick={async () => {
               cleanStatus()
               if (props.selectedToken && rawRecordsStr.trim().length > 0) {
-                const [records, invalid] = filterRecords(rawRecordsStr)
+                const [records, invalid] = filterRecords(rawRecordsStr.trim())
                 const [prepared, unprepared] = await filterRecordsOnChain(props.selectedToken, records)
   
                 setValidRecords(prepared)
@@ -333,7 +333,7 @@ export default function RecipientsInput(props) {
                     <a 
                     href={`https://testnet.flowscan.org/transaction/${txid}`} 
                     rel="noopener noreferrer"
-                    target="_blank" className="block font-flow text-sm leading-6 underline">
+                    target="_blank" className="block font-flow text-sm leading-6 underline decoration-flow-green decoration-2">
                       {`${txid}`}
                     </a >
                   )}

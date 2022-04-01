@@ -10,7 +10,7 @@ export default function NavigationBar() {
           href="https://testnet.flowscan.org" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="absolute right-0 font-flow text-lg underline">
+          className="absolute right-0 font-flow text-lg underline decoration-flow-green decoration-2">
             Flowscan
         </a>
       </div>
