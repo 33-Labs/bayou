@@ -19,7 +19,7 @@ export default function Home() {
   const [tokenBalance, setTokenBalance] = useState(0)
 
   return (
-    <div className="container mx-auto max-w-screen-sm min-w-[350px]">
+    <div className="container mx-auto max-w-screen-sm min-w-[350px] px-8">
       <NavigationBar user={user} />
       <WalletConnector className="mt-12 w-full" user={user} />
 
