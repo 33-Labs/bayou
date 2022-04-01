@@ -182,7 +182,7 @@ export default function RecipientsInput(props) {
         Recipients & Amounts
       </label>
       <label className="block font-flow text-md leading-10">
-      Enter one address and token amount on each line. Seperate with comma.
+        For each line, enter one address and the token amount, seperate with comma.
       </label>
       <div className="mt-1">
         <textarea
