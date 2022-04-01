@@ -51,9 +51,9 @@ export default function Home() {
           href="https://github.com/33-Labs"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-flow text-sm"
+          className="font-flow text-sm whitespace-pre"
         >
-          Made by 33Lab with ❤️
+          Made by <span className="underline font-bold decoration-flow-green decoration-2">33Lab</span> with ❤️
         </a>
       </footer>
     </div>
