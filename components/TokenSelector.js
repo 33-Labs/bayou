@@ -66,14 +66,14 @@ export default function TokenSelector(props) {
                 className={({ active }) =>
                   classNames(
                     'relative cursor-default select-none py-2 pl-3 pr-9',
-                    active ? 'bg-flow-green' : 'text-black'
+                    active ? 'bg-flow-green/50' : 'text-black'
                   )
                 }
               >
                 {({ active, selected }) => (
                   <>
                     <div className="flex items-center">
-                      <img src={token.imageUrl} alt="" className="h-6 w-6 flex-shrink-0 rounded-full border border-gray-100" />
+                      <Image src={token.imageUrl} alt="" width={24} height={24} className="" />
                       <span className={classNames('ml-3 truncate', selected && 'font-semibold')}>{`${token.name} (${token.symbol})`}</span>
                     </div>
 
