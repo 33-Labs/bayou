@@ -6,8 +6,8 @@ export default function NavigationBar() {
     <>
       <div className="relative gap-x-2 flex items-center bg-white h-48">
         <Image src="/bayou.png" alt="" width={50} height={50} priority />
-        <label className="font-flow font-bold text-4xl">
-          Bayou
+        <label className="font-flow font-bold text-3xl">
+          bayou
         </label>
         <label className="font-flow text-flow-green border border-flow-green text-sm whitespace-pre"> {publicConfig.chainEnv} </label>
         <a 
