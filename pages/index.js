@@ -30,7 +30,6 @@ export default function Home() {
       <WalletConnector className="mt-12 w-full" user={user} />
 
       <div className="flex flex-col items-center justify-center">
-
         {
           user && user.loggedIn && (
             <>
@@ -47,7 +46,6 @@ export default function Home() {
                 tokenBalance={tokenBalance}
               />
             </>
-
           )
         }
 
