@@ -11,6 +11,7 @@ export default function RecipientsInput(props) {
   const [validRecords, setValidRecords] = useState([])
   const [unpreparedRecords, setUnpreparedRecords] = useState([])
   const [invalidRecords, setInvalidRecords] = useState([])
+  const [processError, setProcessError] = useState(null)
   const [txid, setTxid] = useState(null)
   const [txStatus, setTxStatus] = useState(null)
   const [processState, setProcessState] = useState({
@@ -20,6 +21,7 @@ export default function RecipientsInput(props) {
   })
 
   const cleanStatus = useCallback(() => {
+    setProcessError(null)
     setValidRecords([])
     setUnpreparedRecords([])
     setInvalidRecords([])
@@ -121,11 +123,11 @@ export default function RecipientsInput(props) {
           onChange={(event) => {setRawRecordsStr(event.target.value)}}
         />
       </div>
-      <div className="relative flex items-end h-20">
+      <div className="flex gap-x-4 items-end h-20">
         <button
             type="button"
             disabled={processState.disabled}
-            className={`absolute h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black ${processState.bg_color} hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
+            className={`h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black ${processState.bg_color} hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
             onClick={async () => {
               cleanStatus()
               if (props.selectedToken && rawRecordsStr.trim().length > 0) {
@@ -137,11 +139,20 @@ export default function RecipientsInput(props) {
                 setValidRecords(prepared)
                 setUnpreparedRecords(unprepared)
                 setInvalidRecords(invalid)
+              } else {
+                setProcessError('Please select token, input recipients and amounts')
               }
             }}
             >
             {processState.text}
         </button>
+        {
+          processError && (
+            <div className="min-w-0 flex flex-col justify-center h-14 justify-self-end">
+              {<label className="font-flow text-md text-rose-500">{processError}</label>}
+            </div>
+          )
+        }
       </div>
       {
         validRecords.length > 0 && (
