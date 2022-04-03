@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { useState, useEffect } from "react";
 import * as fcl from "@onflow/fcl";
@@ -19,6 +20,11 @@ export default function Home() {
   const [tokenBalance, setTokenBalance] = useState(0)
 
   return (
+    <>
+    <Head>
+      <title>bayou | batch token transfer tool</title>
+      <meta property="og:title" content="bayou | batch token transfer tool" key="title" />
+    </Head>
     <div className="container mx-auto max-w-[680px] min-w-[350px] px-8">
       <NavigationBar user={user} />
       <WalletConnector className="mt-12 w-full" user={user} />
@@ -57,5 +63,6 @@ export default function Home() {
         </a>
       </footer>
     </div>
+    </>
   )
 }
