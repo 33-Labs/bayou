@@ -35,7 +35,7 @@ export default function Home() {
           user && user.loggedIn && (
             <>
               <TokenSelector 
-                className="w-full mt-8 mb-20" 
+                className="w-full mb-20" 
                 user={user}
                 onTokenSelected={(token) => setSelectedToken(token)} 
                 onBalanceFetched={(balance) => setTokenBalance(balance)} 

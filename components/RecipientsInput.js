@@ -123,7 +123,7 @@ export default function RecipientsInput(props) {
           onChange={(event) => {setRawRecordsStr(event.target.value)}}
         />
       </div>
-      <div className="flex gap-x-4 items-end h-20">
+      <div className="flex gap-x-4 mb-20 items-end h-20">
         <button
             type="button"
             disabled={processState.disabled}
@@ -157,7 +157,7 @@ export default function RecipientsInput(props) {
       {
         validRecords.length > 0 && (
           <>
-          <label className="block mt-20 text-2xl font-bold font-flow">Confirm</label>
+          <label className="block text-2xl font-bold font-flow">Confirm</label>
           <div className="mt-1 mb-30">
             <ul role="list">
               <li key="title">
@@ -227,7 +227,7 @@ export default function RecipientsInput(props) {
               </li>
             </ul>
           </div>
-          <div className="flex gap-x-4 mt-8 items-end h-14 mb-30">
+          <div className="flex gap-x-4 mt-8 mb-20 items-end h-14 mb-30">
             <button
                 type="button"
                 disabled={props.tokenBalance.sub(recordsSum).isNegative()}
@@ -295,7 +295,7 @@ export default function RecipientsInput(props) {
         )
       }
       {(unpreparedRecords.length > 0 || invalidRecords.length > 0) && (
-        <label className="block mt-20 text-2xl font-bold font-flow">Invalid Entries</label>
+        <label className="block text-2xl font-bold font-flow">Invalid Entries</label>
       )} 
       {
         unpreparedRecords.length > 0 && (
