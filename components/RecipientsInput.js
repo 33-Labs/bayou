@@ -115,19 +115,40 @@ export default function RecipientsInput(props) {
           name="records"
           id="records"
           className="focus:ring-flow-green-dark focus:border-flow-green-dark bg-flow-green/10 resize-none block w-full border-flow-green font-flow text-lg placeholder:text-gray-300"
-          defaultValue={''}
           spellCheck={false}
           placeholder={
             "0xf8d6e0586b0a20c7,1.6"
           }
+          value={rawRecordsStr}
           onChange={(event) => {setRawRecordsStr(event.target.value)}}
         />
       </div>
       <div className="flex gap-x-4 items-end h-20">
+        <div
+            className={`relative h-14 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
+            >
+            Upload CSV
+            <input 
+              id="csv_uploader"
+              type="file" 
+              accept=".csv" 
+              className="absolute left-0 opacity-0 file:w-full file:h-full w-full h-full" 
+              onChange={(event) => {
+                const f = event.target.files[0]
+                const reader = new FileReader()
+                reader.addEventListener('load', (e) => {
+                  const data = e.target.result
+                  setRawRecordsStr(data)
+                  event.target.value = null
+                })
+                reader.readAsText(f)
+              }}
+            />
+        </div>
         <button
             type="button"
             disabled={processState.disabled}
-            className={`h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black ${processState.bg_color} hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
+            className={`h-14 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black ${processState.bg_color} hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
             onClick={async () => {
               cleanStatus()
               if (props.selectedToken && rawRecordsStr.trim().length > 0) {
