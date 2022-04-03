@@ -230,7 +230,8 @@ export default function RecipientsInput(props) {
           <div className="flex gap-x-4 mt-8 items-end h-14 mb-30">
             <button
                 type="button"
-                className="justify-self-end h-14 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
+                disabled={props.tokenBalance.sub(recordsSum).isNegative()}
+                className="disabled:opacity-50 justify-self-end h-14 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
                 onClick={async () => {
                   cleanTxInfo()
                   if (props.selectedToken) {
@@ -253,6 +254,13 @@ export default function RecipientsInput(props) {
                 >
                 Transfer
             </button>
+            {props.tokenBalance.sub(recordsSum).isNegative() && (
+                <div className="min-w-0 flex flex-col justify-center h-14 justify-self-end">
+                  <label className="font-flow text-md text-rose-500">
+                    Total exceeds your balance
+                  </label>
+                </div>
+            )}
             {
               txStatus && (
                 <div className="min-w-0 flex flex-col justify-center h-14 justify-self-end">
