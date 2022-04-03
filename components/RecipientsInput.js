@@ -125,7 +125,7 @@ export default function RecipientsInput(props) {
       </div>
       <div className="flex gap-x-4 items-end h-20">
         <div
-            className={`relative h-14 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
+            className="relative shrink-0 h-14 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
             >
             Upload CSV
             <input 
@@ -175,6 +175,10 @@ export default function RecipientsInput(props) {
           )
         }
       </div>
+      <div className="flex">
+        <label className="font-flow px-6 text-sm text-flow-green leading-10">Sample CSV</label>
+      </div>
+
       {
         validRecords.length > 0 && (
           <>
