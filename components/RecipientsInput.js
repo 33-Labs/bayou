@@ -16,7 +16,6 @@ export default function RecipientsInput(props) {
   const [txStatus, setTxStatus] = useState(null)
   const [processState, setProcessState] = useState({
     disabled: false, 
-    bg_color: "bg-flow-green",
     text: "Process"
   })
 
@@ -127,14 +126,14 @@ export default function RecipientsInput(props) {
         <button
             type="button"
             disabled={processState.disabled}
-            className={`h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black ${processState.bg_color} hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
+            className={`disabled:opacity-50 h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
             onClick={async () => {
               cleanStatus()
               if (props.selectedToken && rawRecordsStr.trim().length > 0) {
                 const [records, invalid] = filterRecords(rawRecordsStr.trim())
-                setProcessState({disabled: true, bg_color: "bg-flow-green-dark", text: "Processing"})
+                setProcessState({disabled: true, text: "Processing"})
                 const [prepared, unprepared] = await filterRecordsOnChain(props.selectedToken, records)
-                setProcessState({disabled: false, bg_color: "bg-flow-green", text: "Process"})
+                setProcessState({disabled: false, text: "Process"})
   
                 setValidRecords(prepared)
                 setUnpreparedRecords(unprepared)
