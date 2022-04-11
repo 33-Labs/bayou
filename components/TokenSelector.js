@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { Combobox } from '@headlessui/react'
 
-import TokenList from '../lib/tokenList';
 import bayouService from '../lib/bayouService'
 import Decimal from 'decimal.js';
 
-const tokens = TokenList()
+import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry';
+import publicConfig from '../publicConfig'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -17,6 +17,19 @@ export default function TokenSelector(props) {
   const [query, setQuery] = useState('')
   const [selectedToken, setSelectedToken] = useState()
   const [balance, setBalance] = useState(new Decimal(0))
+  const [tokens, setTokens] = useState([]);
+
+  useEffect(() => {
+    let env = ENV.Mainnet
+    if (publicConfig.chainEnv == 'testnet') {
+      env = ENV.Testnet
+    }
+
+    new TokenListProvider().resolve(Strategy.CDN, env).then(tokens => {
+      const tokenList = tokens.getList();
+      setTokens(tokenList)
+    })
+  }, [setTokens])
 
   const filteredTokens =
     query === ''
@@ -73,7 +86,7 @@ export default function TokenSelector(props) {
                 {({ active, selected }) => (
                   <>
                     <div className="flex items-center">
-                      <Image src={token.imageUrl} alt="" width={24} height={24} className="" />
+                      <Image src={token.logoURI} alt="" width={24} height={24} className="" />
                       <span className={classNames('ml-3 truncate', selected && 'font-semibold')}>{`${token.name} (${token.symbol})`}</span>
                     </div>
 
