@@ -25,7 +25,7 @@ export default function TokenSelector(props) {
       env = ENV.Testnet
     }
 
-    new TokenListProvider().resolve(Strategy.CDN, env).then(tokens => {
+    new TokenListProvider().resolve(Strategy.GitHub, env).then(tokens => {
       const tokenList = tokens.getList();
       setTokens(tokenList)
     })
@@ -86,7 +86,9 @@ export default function TokenSelector(props) {
                 {({ active, selected }) => (
                   <>
                     <div className="flex items-center">
-                      <Image src={token.logoURI} alt="" width={24} height={24} className="" />
+                      <div className="w-6 h-6 relative">
+                        <Image src={token.logoURI} alt="" layout="fill" objectFit="cover" width={24} height={24} className="rounded-full" />
+                      </div>
                       <span className={classNames('ml-3 truncate', selected && 'font-semibold')}>{`${token.name} (${token.symbol})`}</span>
                     </div>
 
