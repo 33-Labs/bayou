@@ -54,7 +54,12 @@ export default function RecipientsInput(props) {
 
     records.map(async (record) => {
       let task = new Promise(async (resolve, reject) => {
-        let prepared = await bayouService.queryReceiver(token, record.address)
+        let prepared = false
+        try {
+          prepared = await bayouService.queryReceiver(token, record.address)
+        } catch (e) {
+          prepared = false
+        }
         if (prepared === true) {
           preparedRecords.push(record)
         } else {
