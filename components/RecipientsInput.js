@@ -158,6 +158,52 @@ export default function RecipientsInput(props) {
           )
         }
       </div>
+      {(unpreparedRecords.length > 0 || invalidRecords.length > 0) && (
+        <label className="block text-2xl font-bold font-flow">Invalid Entries</label>
+      )} 
+      {
+        unpreparedRecords.length > 0 && (
+          <>
+            <label className="block font-flow text-md leading-10">
+            Due to a lack of Receiver in account
+            </label>
+            <div className="mt-1">
+              <textarea
+                rows={unpreparedRecords.length > 8 ? 8 : unpreparedRecords.length}
+                name="unprepared"
+                id="unprepared"
+                className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
+                disabled={true}
+                defaultValue={(unpreparedRecords.reduce((p, c) => { return `${p}\n${c.rawRecord}`}, '')).trim()}
+                spellCheck={false}
+              />
+            </div>
+          </>
+        )
+      }
+      {
+        invalidRecords.length > 0 && (
+          <>
+            <label className="block font-flow text-md leading-10">
+            Due to invalid format
+            </label>
+            <div className="mt-1">
+              <textarea
+                rows={invalidRecords.length > 8 ? 8 : invalidRecords.length}
+                name="invalid"
+                id="invalid"
+                className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
+                disabled={true}
+                defaultValue={(invalidRecords.reduce((p, c) => { return `${p}\n${c}`}, '')).trim()}
+                spellCheck={false}
+              />
+            </div>
+          </>
+        )
+      }
+      {(unpreparedRecords.length > 0 || invalidRecords.length > 0) && (
+        <div className="h-20"></div>
+      )} 
       {
         validRecords.length > 0 && (
           <>
@@ -234,7 +280,7 @@ export default function RecipientsInput(props) {
           <div className="flex gap-x-4 mt-8 mb-20 items-end h-14 mb-30">
             <button
                 type="button"
-                disabled={props.tokenBalance.sub(recordsSum).isNegative()}
+                disabled={props.tokenBalance.sub(recordsSum).isNegative() || (txStatus && txStatus == TransactionStatus.Pending)}
                 className="disabled:opacity-50 justify-self-end h-14 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
                 onClick={async () => {
                   cleanTxInfo()
@@ -270,14 +316,14 @@ export default function RecipientsInput(props) {
                 <div className="min-w-0 flex flex-col justify-center h-14 justify-self-end">
                   {
                     txStatus == TransactionStatus.Sealed
-                    ? <label className="font-flow text-md text-flow-green">
-                    Status: {txStatus}
+                    ? <label className="font-flow text-md text-flow-green font-bold">
+                    Status: Success
                     </label>
                     : (txStatus == TransactionStatus.ExecutionFailed || txStatus == TransactionStatus.Rejected) 
-                    ? <label className="font-flow text-md text-rose-500">
+                    ? <label className="font-flow text-md text-rose-500 font-bold">
                     Status: {txStatus}
                     </label>
-                    : <label className="font-flow text-md">
+                    : <label className="font-flow text-md font-bold">
                     Status: {txStatus}
                     </label>
                   }
@@ -295,49 +341,6 @@ export default function RecipientsInput(props) {
             }
 
           </div>
-          </>
-        )
-      }
-      {(unpreparedRecords.length > 0 || invalidRecords.length > 0) && (
-        <label className="block text-2xl font-bold font-flow">Invalid Entries</label>
-      )} 
-      {
-        unpreparedRecords.length > 0 && (
-          <>
-            <label className="block font-flow text-md leading-10">
-            Due to a lack of Receiver in account
-            </label>
-            <div className="mt-1">
-              <textarea
-                rows={unpreparedRecords.length > 8 ? 8 : unpreparedRecords.length}
-                name="unprepared"
-                id="unprepared"
-                className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
-                disabled={true}
-                defaultValue={(unpreparedRecords.reduce((p, c) => { return `${p}\n${c.rawRecord}`}, '')).trim()}
-                spellCheck={false}
-              />
-            </div>
-          </>
-        )
-      }
-      {
-        invalidRecords.length > 0 && (
-          <>
-            <label className="block font-flow text-md leading-10">
-            Due to invalid format
-            </label>
-            <div className="mt-1">
-              <textarea
-                rows={invalidRecords.length > 8 ? 8 : invalidRecords.length}
-                name="invalid"
-                id="invalid"
-                className="focus:ring-rose-700 focus:border-rose-700 bg-rose-300/10 resize-none block w-full border-rose-700 font-flow text-lg placeholder:text-gray-300"
-                disabled={true}
-                defaultValue={(invalidRecords.reduce((p, c) => { return `${p}\n${c}`}, '')).trim()}
-                spellCheck={false}
-              />
-            </div>
           </>
         )
       }
