@@ -297,6 +297,8 @@ export default function RecipientsInput(props) {
                           setTxStatus(TransactionStatus.ExecutionFailed)
                       } else if (typeof e === "object" && e.message.includes("Declined")) {
                           setTxStatus(TransactionStatus.Rejected)
+                      } else if (typeof e === "string" && e.includes("Declined")) {
+                          setTxStatus(TransactionStatus.Rejected)
                       }
                     }
                   }
