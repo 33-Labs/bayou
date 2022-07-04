@@ -48,29 +48,17 @@ export default function RecipientsInput(props) {
   }, [props.selectedToken, cleanStatus])
 
   const filterRecordsOnChain = async (token, records) => {
-    let tasks = []
-    let preparedRecords = []
-    let unpreparedRecords = []
+    let addresses = records.map((r) => r.address)
+    let unpreparedAddresses = await bayouService.batchQueryReceiver(token, addresses)
 
-    records.map(async (record) => {
-      let task = new Promise(async (resolve, reject) => {
-        let prepared = false
-        try {
-          prepared = await bayouService.queryReceiver(token, record.address)
-        } catch (e) {
-          prepared = false
-        }
-        if (prepared === true) {
-          preparedRecords.push(record)
-        } else {
-          unpreparedRecords.push(record)
-        }
-        resolve(prepared)
-      })
-      tasks.push(task)
+    let preparedRecords = records.filter((r) => {
+      return !unpreparedAddresses.includes(r.address)
     })
 
-    await Promise.all(tasks)
+    let unpreparedRecords = records.filter((r) => {
+      return unpreparedAddresses.includes(r.address)
+    })
+
     setRecordsSum(preparedRecords.reduce((p, c) => { 
       return p.add(c.amount)
     }, new Decimal(0)))

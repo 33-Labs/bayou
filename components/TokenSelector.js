@@ -26,7 +26,10 @@ export default function TokenSelector(props) {
     }
 
     new TokenListProvider().resolve(Strategy.GitHub, env).then(tokens => {
-      const tokenList = tokens.getList();
+      const tokenList = tokens.getList().map((token) => {
+        token.id = `${token.address}.${token.contractName}`
+        return token
+      })
       setTokens(tokenList)
     })
   }, [setTokens])
@@ -87,7 +90,7 @@ export default function TokenSelector(props) {
                   <>
                     <div className="flex items-center">
                       <div className="w-6 h-6 relative">
-                        <Image src={token.logoURI} alt="" layout="fill" objectFit="cover" width={24} height={24} className="rounded-full" />
+                      <Image src={token.logoURI} alt="" layout="fill" objectFit="cover" className="rounded-full" />
                       </div>
                       <span className={classNames('ml-3 truncate', selected && 'font-semibold')}>{`${token.name} (${token.symbol})`}</span>
                     </div>
