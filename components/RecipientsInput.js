@@ -153,7 +153,7 @@ export default function RecipientsInput(props) {
         unpreparedRecords.length > 0 && (
           <>
             <label className="block font-flow text-md leading-10">
-            Due to a lack of Receiver in account
+            These accounts could not receive tokens from unauthorized accounts due to a lack of Receiver. Please contact the owners of these accounts for detail.
             </label>
             <div className="mt-1">
               <textarea
