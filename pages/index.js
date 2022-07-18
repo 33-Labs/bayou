@@ -57,7 +57,7 @@ export default function Home() {
           rel="noopener noreferrer"
           className="font-flow text-sm whitespace-pre"
         >
-          Made by <span className="underline font-bold decoration-flow-green decoration-2">33Lab</span> with ❤️
+          Made by <span className="underline font-bold decoration-flow-green decoration-2">33Labs</span> with ❤️
         </a>
       </footer>
     </div>
