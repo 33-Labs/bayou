@@ -8,6 +8,7 @@ import NavigationBar from '../components/NavigationBar'
 import TokenSelector from '../components/TokenSelector'
 import RecipientsInput from '../components/RecipientsInput'
 import WalletConnector from '../components/WalletConnector';
+import Footer from '../components/Footer';
 
 export default function Home() {
   const [user, setUser] = useState({loggedIn: null})
@@ -50,16 +51,7 @@ export default function Home() {
         }
 
       </div>
-      <footer className={styles.footer}>
-        <a
-          href="https://github.com/33-Labs"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-flow text-sm whitespace-pre"
-        >
-          Made by <span className="underline font-bold decoration-flow-green decoration-2">33Labs</span> with ❤️
-        </a>
-      </footer>
+      <Footer />
     </div>
     </>
   )
