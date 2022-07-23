@@ -4,7 +4,7 @@ import publicConfig from "../publicConfig"
 export default function NavigationBar() {
   return (
     <>
-      <div className="relative gap-x-2 flex items-center bg-white h-44">
+      <div className="relative gap-x-2 flex items-center h-44">
         <Image src="/bayou.png" alt="" width={50} height={50} priority />
         <label className="font-flow font-bold text-3xl">
           bayou

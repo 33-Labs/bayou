@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@headlessui/react": "^1.5.0",
+    "@headlessui/react": "^1.6.6",
     "@heroicons/react": "^1.0.6",
     "@onflow/fcl": "^1.0.2",
     "@onflow/transport-http": "^1.2.0",
