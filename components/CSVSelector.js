@@ -6,7 +6,7 @@ export default function CSVSelector(props) {
       <a href={sample} download
         className="text-flow-green-dark text-base font-medium"
       >Sample</a>
-      <div className="h-14 px-3 shadow-sm 
+      <div className="shadow-md h-14 px-3
       font-medium text-base text-flow-green-dark bg-flow-green/50
     hover:bg-flow-green-dark hover:text-black"
       >

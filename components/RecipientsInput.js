@@ -21,13 +21,13 @@ export default function RecipientsInput(props) {
     text: "Process"
   })
 
-  const cleanStatus = useCallback(() => {
+  const cleanStatus = () => {
     setShowNotification(false)
     setValidRecords([])
     setUnpreparedRecords([])
     setInvalidRecords([])
     cleanTxInfo()
-  }, [])
+  }
 
   const cleanTxInfo = () => {
     setTxid(null)
@@ -46,8 +46,10 @@ export default function RecipientsInput(props) {
   }
 
   useEffect(() => {
-    cleanStatus()
-  }, [props.selectedToken, cleanStatus])
+    if (props.selectedToken) {
+      cleanStatus()
+    }
+  }, [props.selectedToken])
 
   const filterRecordsOnChain = async (token, records) => {
     let addresses = records.map((r) => r.address)
@@ -131,7 +133,7 @@ export default function RecipientsInput(props) {
           <button
             type="button"
             disabled={processState.disabled || txStatus == TransactionStatus.Pending}
-            className={`disabled:opacity-50 h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
+            className={`disabled:opacity-50 h-14 left-0 justify-self-end inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-md text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green`}
             onClick={async () => {
               cleanStatus()
               if (props.selectedToken && rawRecordsStr.trim().length > 0) {
@@ -292,7 +294,7 @@ export default function RecipientsInput(props) {
                 <button
                   type="button"
                   disabled={props.tokenBalance.sub(recordsSum).isNegative() || (txStatus && txStatus == TransactionStatus.Pending)}
-                  className="disabled:opacity-50 justify-self-end h-14 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
+                  className="shadow-md disabled:opacity-50 justify-self-end h-14 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
                   onClick={async () => {
                     cleanTxInfo()
                     if (props.selectedToken) {

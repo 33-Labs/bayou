@@ -17,7 +17,7 @@ export default function Home(props) {
   }, [user])
   const [selectedToken, setSelectedToken] = useState(null)
   const [tokenBalance, setTokenBalance] = useState(0)
-  const {setShowNotification, setNotificationContent} = props
+  const { setShowNotification, setNotificationContent } = props
 
   return (
     <>
@@ -27,7 +27,12 @@ export default function Home(props) {
       </Head>
       <div className="container mx-auto max-w-[680px] min-w-[350px] px-8">
         <NavigationBar user={user} />
-        <WalletConnector className="mt-12 w-full" user={user} />
+        <WalletConnector
+          className="mt-12 w-full"
+          user={user}
+          setShowNotification={setShowNotification}
+          setNotificationContent={setNotificationContent}
+        />
 
         <div className="flex flex-col items-center justify-center">
           {

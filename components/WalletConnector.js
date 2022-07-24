@@ -1,9 +1,22 @@
 import * as fcl from "@onflow/fcl";
+import { useEffect } from "react";
 import config from "../flow/config.js"
 import publicConfig from "../publicConfig.js";
 
 export default function WalletConnector(props) {
   const user = props.user
+
+  useEffect(() => {
+    window.addEventListener("message", async (d) => {
+      if ((d.data.type === "FCL:VIEW:RESPONSE" && d.data.status === "APPROVED" && (d.data.data.network && d.data.data.network !== publicConfig.chainEnv))
+        || (d.data.type === "LILICO:NETWORK" && typeof d.data.network === "string" && d.data.network != publicConfig.chainEnv)) {
+        props.setShowNotification(true)
+        props.setNotificationContent({ type: "exclamation", title: "WRONG NETWORK", detail: null })
+        await new Promise(r => setTimeout(r, 2))
+        fcl.unauthenticate()
+      }
+    })
+  }, [])
 
   const AuthedState = () => {
     return (
@@ -19,7 +32,7 @@ export default function WalletConnector(props) {
         </label>
         <button
           type="button"
-          className="h-14 mt-8 mb-20 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
+          className="h-14 mt-8 mb-20 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-md text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
           onClick={fcl.unauthenticate}
           >
             Disconnect
@@ -36,7 +49,7 @@ export default function WalletConnector(props) {
         </label>
         <button
           type="button"
-          className="h-14 mt-8 mb-20 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-sm text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
+          className="h-14 mt-8 mb-20 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium shadow-md text-black bg-flow-green hover:bg-flow-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flow-green"
           onClick={fcl.logIn}
           >
           Connect Wallet
