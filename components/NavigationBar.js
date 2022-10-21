@@ -10,7 +10,7 @@ export default function NavigationBar() {
           <label className="font-flow font-bold text-3xl">
             bayou
           </label>
-          <label className="font-flow text-flow-green border border-flow-green text-sm whitespace-pre"> {publicConfig.chainEnv} </label>
+          {/* <label className="font-flow text-flow-green border border-flow-green text-sm whitespace-pre"> {publicConfig.chainEnv} </label> */}
         </div>
         <div className="flex gap-x-2 items-center">
           <div className="relative w-[25px] h-[25px] rounded-full">
