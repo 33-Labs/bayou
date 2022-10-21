@@ -25,7 +25,7 @@ export default function Home(props) {
         <title>bayou | batch token transfer tool</title>
         <meta property="og:title" content="bayou | batch token transfer tool" key="title" />
       </Head>
-      <div className="container mx-auto max-w-[680px] min-w-[350px] px-8">
+      <div className="container mx-auto max-w-[880px] min-w-[350px] px-8">
         <NavigationBar user={user} />
         <WalletConnector
           className="mt-12 w-full"
