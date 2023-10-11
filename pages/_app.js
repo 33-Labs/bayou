@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import BasicNotification from '../components/BasicNotification'
 import '../styles/globals.css'
+import { Analytics } from '@vercel/analytics/react'
 
 function MyApp({ Component, pageProps }) {
   const [showNotification, setShowNotification] = useState(false)
@@ -19,6 +20,7 @@ function MyApp({ Component, pageProps }) {
         show={showNotification}
         setShow={setShowNotification}
       />
+      <Analytics />
     </div>
   )
 }

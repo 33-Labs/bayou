@@ -2,7 +2,19 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['cdn.jsdelivr.net', 'raw.githubusercontent.com'],
+    formats: ['image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**'
+      }
+    ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   }
 }
 
