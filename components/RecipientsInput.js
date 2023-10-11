@@ -345,7 +345,7 @@ export default function RecipientsInput(props) {
 
                       {txid && (
                         <a
-                          href={`${publicConfig.flowscanURL}/transaction/${txid}`}
+                          href={`${publicConfig.flowscanURL}/tx/${txid}`}
                           rel="noopener noreferrer"
                           target="_blank" className="truncate font-flow text-sm leading-6 underline decoration-flow-green decoration-2">
                           {`${txid}`}
