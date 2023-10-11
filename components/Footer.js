@@ -29,6 +29,14 @@ export default function Footer() {
               <Image src="/twitter.png" alt="" width={20} height={20} objectFit="contain" priority />
             </div>
           </a>
+          <a href="https://flowview.app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className="min-w-[20px]">
+              <Image src="/flowview.png" alt="" width={20} height={20} priority />
+            </div>
+          </a>
           <a href="https://drizzle33.app"
             target="_blank"
             rel="noopener noreferrer"

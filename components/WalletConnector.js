@@ -24,7 +24,7 @@ export default function WalletConnector(props) {
         <label className="whitespace-pre block font-flow text-md leading-10">
         {"Logged in as "}
         <a 
-          href={`${publicConfig.flowscanURL}/account/${user?.addr ?? "No Address"}`}
+          href={`${publicConfig.flowviewURL}/account/${user?.addr ?? "No Address"}`}
           target="_blank"
           rel="noopener noreferrer"
           className="font-flow text-lg leading-10 underline decoration-flow-green decoration-2">{user?.addr ?? "No Address"}

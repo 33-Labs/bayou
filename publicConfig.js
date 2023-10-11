@@ -13,6 +13,9 @@ if (!walletDiscovery) throw "Missing NEXT_PUBLIC_WALLET_DISCOVERY"
 const flowscanURL = process.env.NEXT_PUBLIC_FLOWSCAN_URL
 if (!flowscanURL) throw "Missing NEXT_PUBLIC_FLOWSCAN_URL"
 
+const flowviewURL = process.env.NEXT_PUBLIC_FLOWVIEW_URL
+if (!flowviewURL) throw "Missing NEXT_PUBLIC_FLOWVIEW_URL"
+
 const fungibleTokenAddress = process.env.NEXT_PUBLIC_FUNGIBLE_TOKEN_ADDRESS
 if (!fungibleTokenAddress) throw "Missing NEXT_PUBLIC_FUNGIBLE_TOKEN_ADDRESS"
 
@@ -25,6 +28,7 @@ const publicConfig = {
   appURL,
   walletDiscovery,
   flowscanURL,
+  flowviewURL,
   fungibleTokenAddress,
   flowTokenAddress,
 }
