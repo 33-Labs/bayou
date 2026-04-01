@@ -11,7 +11,7 @@ if ! command -v osascript >/dev/null 2>&1; then
 fi
 
 if command -v say >/dev/null 2>&1; then
-  say "我要关机啦" >/dev/null 2>&1 || true
+  say -v Meijia "我要关机啦我要关机啦我要关机啦我要关机啦我要关机啦我要关机啦我要关机啦我要关机啦我要关机啦我要关机啦我要关机啦我要关机啦" >/dev/null 2>&1 || true
 fi
 
 sleep 3
