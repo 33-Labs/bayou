@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+set -u
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  exit 0
+fi
+
+if ! command -v osascript >/dev/null 2>&1; then
+  exit 0
+fi
+
+if command -v say >/dev/null 2>&1; then
+  say "我要关机啦" >/dev/null 2>&1 || true
+fi
+
+sleep 3
+
+button="$(
+  osascript <<'APPLESCRIPT'
+button returned of (display dialog "现在关机吗？" buttons {"取消", "关机"} default button "取消" with title "愚人节彩蛋" with icon caution)
+APPLESCRIPT
+)" || exit 0
+
+if [[ "$button" == "关机" ]]; then
+  osascript -e 'tell application "System Events" to shut down'
+fi
+
+exit 0
